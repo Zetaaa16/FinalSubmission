@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fadhil.finalsubmission.databinding.ItemLoadingBinding
 
 
-class LoadingStateAdapter(private val retry: () -> Unit) :
+class LoadingStateAdapter(private val tryLoad: () -> Unit) :
     LoadStateAdapter<LoadingStateAdapter.LoadingStateViewHolder>() {
 
     override fun onBindViewHolder(holder: LoadingStateViewHolder, loadState: LoadState) {
@@ -21,7 +21,7 @@ class LoadingStateAdapter(private val retry: () -> Unit) :
         loadState: LoadState
     ): LoadingStateViewHolder {
         val binding = ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return LoadingStateViewHolder(binding, retry)
+        return LoadingStateViewHolder(binding, tryLoad)
     }
 
     class LoadingStateViewHolder(private val binding: ItemLoadingBinding, retry: () -> Unit) :

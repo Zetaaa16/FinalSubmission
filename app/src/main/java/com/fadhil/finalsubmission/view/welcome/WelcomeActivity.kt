@@ -21,39 +21,55 @@ import com.fadhil.finalsubmission.view.register.RegisterActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("CustomSplashScreen")
 class WelcomeActivity : AppCompatActivity() {
-    private val prefHelper by lazy {
-        PreferenceDataSource.invoke(this)
-    }
+    private lateinit var binding: ActivityWelcomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_welcome)
-        hideSystemUI()
-        val token = prefHelper.fetchAuthToken()
-        lifecycleScope.launch {
-            delay(1000)
-            if (token.isNullOrEmpty()) {
-                startActivity(Intent(this@WelcomeActivity, LoginActivity::class.java))
-                finish()
-            } else {
-                startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
-                finish()
-            }
+        binding = ActivityWelcomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupView()
+        setupAction()
+        playAnimation()
+
+
+    }
+
+    private fun setupView() {
+
+        supportActionBar?.hide()
+    }
+
+    private fun setupAction() {
+        binding.loginButton.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        binding.signupButton.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
-    private fun hideSystemUI() {
-        @Suppress("DEPRECATION")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.insetsController?.hide(WindowInsets.Type.statusBars())
-        } else {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
+    private fun playAnimation(){
+        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X,-30f,30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
+
+        val login = ObjectAnimator.ofFloat(binding.loginButton, View.ALPHA,1f).setDuration(500)
+        val signup = ObjectAnimator.ofFloat(binding.signupButton, View.ALPHA,1f).setDuration(500)
+        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA,1f).setDuration(500)
+        val desc = ObjectAnimator.ofFloat(binding.descTextView, View.ALPHA,1f).setDuration(500)
+
+        val together = AnimatorSet().apply {
+            playTogether(login,signup)
         }
-        supportActionBar?.hide()
+
+        AnimatorSet().apply {
+            playSequentially(title,desc,together)
+            start()
+        }
     }
 }

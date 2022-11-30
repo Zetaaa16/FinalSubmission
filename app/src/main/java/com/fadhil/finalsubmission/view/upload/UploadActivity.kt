@@ -43,8 +43,9 @@ class UploadActivity : AppCompatActivity() {
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
     }
-
+    private lateinit var currentPhotoPath: String
     private var isBackCamera: Boolean = false
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -82,9 +83,7 @@ class UploadActivity : AppCompatActivity() {
       //  setUi()
         binding.btnOpenCamera.setOnClickListener { startCameraX() }
         binding.btnOpenImage.setOnClickListener { startGallery() }
-        binding.btnUpload.setOnClickListener {
-            binding.btnUpload.isEnabled = false
-            uploadImage()
+        binding.btnUpload.setOnClickListener { uploadImage()
         }
         //setOnChange()
     }

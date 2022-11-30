@@ -1,5 +1,6 @@
 package com.fadhil.finalsubmission.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.*
@@ -35,27 +36,8 @@ class StoryRepository(
             val data = apiService.login(email, password)
             emit(Result.Success(data))
         } catch (e: Exception) {
-            when (e) {
-                is IOException -> {
-                    emit(
-                        Result.Error(
-                            "Cek Koneksi Internet"
-                        )
-                    )
-                }
-                is HttpException -> {
-                    val gson = Gson()
-                    val type = object : TypeToken<UsualResponse>() {}.type
-                    val errorResponse: UsualResponse? =
-                        gson.fromJson(e.response()?.errorBody()!!.charStream(), type)
-                    emit(
-                        Result.Error(
-                            errorResponse?.message ?: ""
-                        )
-
-                    )
-                }
-            }
+            Log.d("Story Repository", "login: ${e.message.toString()}")
+            emit(Result.Error(e.message.toString()))
         }
 
     }
@@ -70,26 +52,8 @@ class StoryRepository(
             val data = apiService.register(name, email, password)
             emit(Result.Success(data))
         } catch (e: Exception) {
-            when (e) {
-                is IOException -> {
-                    emit(
-                        Result.Error(
-                            "Cek Koneksi Internet"
-                        )
-                    )
-                }
-                is HttpException -> {
-                    val gson = Gson()
-                    val type = object : TypeToken<UsualResponse>() {}.type
-                    val errorResponse: UsualResponse? =
-                        gson.fromJson(e.response()?.errorBody()!!.charStream(), type)
-                    emit(
-                        Result.Error(
-                            errorResponse?.message ?: ""
-                        )
-                    )
-                }
-            }
+            Log.d("Register", e.message.toString())
+            emit(Result.Error(e.message.toString()))
         }
 
     }
@@ -104,6 +68,7 @@ class StoryRepository(
             val data = apiService.uploadStories(file, description)
             emit(Result.Success(data))
         } catch (e: Exception) {
+            Log.d("Upload", e.message.toString())
             emit(Result.Error(e.toString()))
         }
     }
@@ -125,10 +90,11 @@ class StoryRepository(
     fun locationStory(): LiveData<Result<List<GetStoryResult>>> = liveData {
         emit(Result.Loading)
         try {
-            val response = apiService.allStories(location = 1)
+            val response = apiService.allStories( 1)
             val listStory = response.listStory
             emit(Result.Success(listStory))
         } catch (e: Exception) {
+            Log.d("Maps", e.message.toString())
             emit(Result.Error(e.toString()))
         }
 

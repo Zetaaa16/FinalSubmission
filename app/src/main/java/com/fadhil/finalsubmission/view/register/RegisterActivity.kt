@@ -15,72 +15,77 @@ import com.fadhil.finalsubmission.utils.ViewModelFactory
 import com.fadhil.finalsubmission.view.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {
-    private val binding by lazy(LazyThreadSafetyMode.NONE) {
-        ActivityRegisterBinding.inflate(layoutInflater)
-    }
+    private lateinit var binding: ActivityRegisterBinding
     private val viewModel by viewModels<RegisterViewModel> {
         ViewModelFactory.getInstance(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setOnClick()
         playAnimation()
 
-    }
+        binding.apply {
+            signupButton.setOnClickListener {
+                val name = nameEditText.text.toString()
+                val email = emailEditText.text.toString()
+                val password = passwordEditText.text.toString()
 
+                viewModel.register(name, email, password).observe(this@RegisterActivity) { result ->
+                    when (result) {
+                        is Result.Loading -> {
+                            binding.signupButton.isEnabled = false
+                            showLoading(true)
+                        }
+                        is Result.Success -> {
+                            showLoading(false)
+                            binding.signupButton.isEnabled = true
 
+                                AlertDialog.Builder(this@RegisterActivity).apply {
+                                    setTitle("Yeah!")
+                                    setMessage("Akunnya sudah jadi nih. Yuk, Kita Login")
+                                    setPositiveButton("Lanjut") { _, _ ->
+                                        finish()
+                                    }
+                                    create()
+                                    show()
+                                }
 
-    private fun register(name: String, email: String, password: String) {
-        viewModel.register(name, email, password).observe(this) { result ->
-            when (result) {
-                is Result.Loading -> {
+                        }
+                        is Result.Error -> {
+                            binding.signupButton.isEnabled = true
+                            showLoading(false)
 
-                }
-                is Result.Success -> {
-                 //   UtilsUi.closeDialog()
-                  //  binding.btnRegister.isEnabled = true
-                    result.data.let {
-                        message(it.message)
-                        binding.nameEditText.setText("")
-                        binding.emailEditText.setText("")
-                        binding.passwordEditText.setText("")
-                        AlertDialog.Builder(this).apply {
-                            setTitle("Yeah!")
-                            setMessage("Akunnya sudah jadi nih. Yuk, Kita Login")
-                            setPositiveButton("Lanjut") { _, _ ->
-                                finish()
-                            }
-                            create()
-                            show()
+                            message(result.error)
                         }
                     }
                 }
-                is Result.Error -> {
 
-                    message(result.error)
-                }
+
+
+            }
+            login.setOnClickListener {
+                val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
             }
         }
+
     }
+
+
+
+
 
     private fun message(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun setOnClick() = with(binding) {
-        signupButton.setOnClickListener {
-            val name = nameEditText.text.toString()
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-            register(name, email, password)
-        }
-        login.setOnClickListener {
-            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+
+
     }
 
     private fun playAnimation(){
@@ -114,5 +119,9 @@ class RegisterActivity : AppCompatActivity() {
             )
             startDelay = 500
         }.start()
+    }
+    private fun showLoading(isLoading: Boolean){
+        binding.progressbar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.bgDim.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

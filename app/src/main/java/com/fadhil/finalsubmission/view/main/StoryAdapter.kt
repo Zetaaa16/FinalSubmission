@@ -7,6 +7,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.bumptech.glide.Glide
 import com.fadhil.finalsubmission.databinding.ItemRowStoryBinding
 import com.fadhil.finalsubmission.storage.database.story.StoryEntity
 import com.fadhil.finalsubmission.view.detail.DetailActivity
@@ -19,8 +20,12 @@ class StoryAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: StoryEntity?) {
             with(binding) {
-                imageview.load(item?.photoUrl)
+                Glide.with(itemView)
+                    .load(item?.photoUrl)
+                    .into(imageview)
                 textView.text = item?.name
+                textdescription.text = item?.description
+                textDate.text = item?.createdAt
                 itemRowStory.setOnClickListener {
                     val intent = Intent(itemView.context, DetailActivity::class.java)
                     intent.putExtra(DetailActivity.EXTRA_STORY, item)

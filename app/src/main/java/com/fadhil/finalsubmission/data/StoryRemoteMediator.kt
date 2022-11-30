@@ -12,8 +12,11 @@ import com.fadhil.finalsubmission.storage.database.story.StoryEntity
 
 
 @OptIn(ExperimentalPagingApi::class)
-class StoryRemoteMediator(private val database: StoryDatabase, private val apiService: ApiService) :
-    RemoteMediator<Int, StoryEntity>() {
+class StoryRemoteMediator(
+    private val database: StoryDatabase,
+    private val apiService: ApiService
+    ) : RemoteMediator<Int, StoryEntity>() {
+
     private companion object {
         const val INITIAL_PAGE_INDEX = 1
     }
@@ -34,34 +37,35 @@ class StoryRemoteMediator(private val database: StoryDatabase, private val apiSe
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 val prevKey = remoteKeys?.prevKey
-                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                    ?: return MediatorResult.Success( remoteKeys != null)
                 prevKey
             }
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 val nextKey = remoteKeys?.nextKey
-                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                    ?: return MediatorResult.Success(remoteKeys != null)
                 nextKey
             }
         }
         try {
-            val responseData = apiService.allStories(page = page, size = state.config.pageSize)
+            val responseData = apiService.allStories(page, state.config.pageSize)
             val endOfPaginationReached = responseData.listStory.isEmpty()
 
-            val listStoryEntity = ArrayList<StoryEntity>()
+            val storyEntity = ArrayList<StoryEntity>()
             for (data in responseData.listStory) {
-                listStoryEntity.add(
+                storyEntity.add(
                     StoryEntity(
-                        id = data.id,
-                        photoUrl = data.photoUrl,
-                        createdAt = data.createdAt,
-                        name = data.name,
-                        description = data.description,
-                        lat = data.lat,
-                        lon = data.lon
+                         data.id,
+                         data.photoUrl,
+                         data.createdAt,
+                         data.name,
+                         data.description,
+                         data.lat,
+                         data.lon
                     )
                 )
             }
+
 
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
@@ -71,12 +75,12 @@ class StoryRemoteMediator(private val database: StoryDatabase, private val apiSe
                 val prevKey = if (page == 1) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1
                 val keys = responseData.listStory.map {
-                    RemoteKeysEntity(id = it.id, prevKey = prevKey, nextKey = nextKey)
+                    RemoteKeysEntity(it.id,  prevKey,  nextKey)
                 }
                 database.remoteKeysDao().insertAll(keys)
-                database.storyDao().insertStory(listStoryEntity)
+                database.storyDao().insertStory(storyEntity)
             }
-            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+            return MediatorResult.Success( endOfPaginationReached)
         } catch (exception: Exception) {
             return MediatorResult.Error(exception)
         }

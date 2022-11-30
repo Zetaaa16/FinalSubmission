@@ -15,14 +15,14 @@ import com.fadhil.finalsubmission.databinding.ActivityLoginBinding
 
 import com.fadhil.finalsubmission.storage.pref.PreferenceDataSource
 import com.fadhil.finalsubmission.utils.ViewModelFactory
+import com.fadhil.finalsubmission.utils.gone
+import com.fadhil.finalsubmission.utils.show
 import com.fadhil.finalsubmission.view.main.MainActivity
 import com.fadhil.finalsubmission.view.register.RegisterActivity
 
 
 class LoginActivity : AppCompatActivity() {
-    private val binding by lazy(LazyThreadSafetyMode.NONE) {
-       ActivityLoginBinding.inflate(layoutInflater)
-    }
+    private lateinit var binding: ActivityLoginBinding
 
     private val viewModel by viewModels<LoginViewModel> {
         ViewModelFactory.getInstance(this)
@@ -34,60 +34,61 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setOnClick()
+      //  setOnClick()
         playAnimation()
-       // setAnimation()
-    }
 
+        binding.apply {
+            loginButton.setOnClickListener {
+               val email = emailEditText.text.toString()
+                val password =passwordEditText.text.toString()
 
-
-    private fun login(email: String, password: String) {
-        viewModel.login(email, password).observe(this) { result ->
-            when (result) {
-                is Result.Loading -> {
-
-                }
-                is Result.Success -> {
-                   // UtilsUi.closeDialog()
-                    binding.loginButton.isEnabled = true
-                    result.data.let {
-                        if (!it.error) {
-                            prefHelper.saveAuthToken(it.loginResult.token)
-                            message(it.message)
-                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                            finish()
-                        } else {
-                            message(it.message)
+                viewModel.login(email, password).observe(this@LoginActivity) { result ->
+                    when (result) {
+                        is Result.Loading -> {
+                            showLoading(true)
+                        }
+                        is Result.Success -> {
+                            showLoading(false)
+                            binding.loginButton.isEnabled = true
+                            result.data.let {
+                                if (!it.error) {
+                                    prefHelper.saveAuthToken(it.loginResult.token)
+                                    message(it.message)
+                                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                                    finish()
+                                } else {
+                                    message(it.message)
+                                }
+                            }
+                        }
+                        is Result.Error -> {
+                            showLoading(false)
+                            message(result.error)
                         }
                     }
-                }
-                is Result.Error -> {
-                   // UtilsUi.closeDialog()
-                   // binding.btnLogin.isEnabled = true
-                    message(result.error)
-                }
-            }
 
+                }
+
+
+            }
+            register.setOnClickListener {
+                val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
+
+
+
+
 
     private fun message(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun setOnClick() {
-        binding.loginButton.setOnClickListener {
-            val email = binding.emailEditText.text.toString()
-            val password = binding.passwordEditText.text.toString()
-            login(email, password)
-        }
 
-        binding.register.setOnClickListener {
-            val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-            startActivity(intent)
-        }
-    }
 
     private fun playAnimation(){
 
@@ -104,6 +105,11 @@ class LoginActivity : AppCompatActivity() {
             playSequentially(title,message,emailTextView,emailEditTextLayout,passwordTextView,passwordEditTextLayout,login,register)
             startDelay = 500
         }.start()
+    }
+
+    private fun showLoading(isLoading: Boolean){
+        if (isLoading) binding.progressbar.show() else binding.progressbar.gone()
+        if (isLoading) binding.bgDim.show() else binding.bgDim.gone()
     }
 
 }
