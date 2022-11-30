@@ -31,8 +31,8 @@ class LoginViewModelTest {
     private lateinit var repository: StoryRepository
     private lateinit var loginViewModel: LoginViewModel
     private val dummyLoginResponse = DataDummy.generateResponseLogin()
-    private val dummyEmail = "faisal@mail.com"
-    private val dummyPassword = "password"
+    private val dummyEmail = "forexample@mail.com"
+    private val dummyPassword = "123456"
 
 
     @Before
@@ -44,16 +44,17 @@ class LoginViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun `when login success return Result Success`() = runTest {
+    fun `when login  not null and return Success`() = runTest {
         val expectedLogin = MutableLiveData<Result<LoginResponse>>()
         expectedLogin.value = Result.Success(dummyLoginResponse)
 
         Mockito.`when`(repository.login(dummyEmail, dummyPassword)).thenReturn(
             expectedLogin
         )
-        val actualRegister = loginViewModel.login(dummyEmail, dummyPassword).getOrAwaitValue {}
+        val actualLogin = loginViewModel.login(dummyEmail, dummyPassword).getOrAwaitValue {}
         Mockito.verify(repository).login(dummyEmail, dummyPassword)
-        assertTrue(actualRegister is Result.Success)
+        assertNotNull(actualLogin)
+        assertTrue(actualLogin is Result.Success)
 
     }
 
@@ -65,9 +66,10 @@ class LoginViewModelTest {
         Mockito.`when`(repository.login(dummyEmail, dummyPassword)).thenReturn(
             expectedLogin
         )
-        val actualRegister = loginViewModel.login(dummyEmail, dummyPassword).getOrAwaitValue {}
+        val actualLogin = loginViewModel.login(dummyEmail, dummyPassword).getOrAwaitValue {}
         Mockito.verify(repository).login(dummyEmail, dummyPassword)
-        assertTrue(actualRegister is Result.Error)
+
+        assertTrue(actualLogin is Result.Error)
 
     }
 

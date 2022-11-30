@@ -18,7 +18,13 @@ import com.fadhil.finalsubmission.data.Result
 import com.fadhil.finalsubmission.data.UsualResponse
 import com.fadhil.finalsubmission.utils.getOrAwaitValue
 import com.fadhil.finalsubmission.view.upload.UploadViewModel
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.mockito.junit.MockitoJUnitRunner
+import java.io.File
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -29,41 +35,60 @@ class UploadViewModelTest {
 
     @Mock
     private lateinit var repository: StoryRepository
-    private lateinit var createStoryViewModel: UploadViewModel
+    private lateinit var uploadViewModel: UploadViewModel
 
     private val dummyUploadSuccess = DataDummy.generateUploadSuccess()
-    private val dummyMultipart = DataDummy.generateDummyMultipartFile()
-    private val dummyDescription = DataDummy.generateDummyRequestBody()
+
 
     @Before
     fun setUp() {
-        createStoryViewModel = UploadViewModel(repository)
+        uploadViewModel = UploadViewModel(repository)
     }
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun `when upload success return result Success`() = runTest {
+    fun `when upload should not null and return result Success`() = runTest {
+        val description = "Ini adalah deksripsi gambar".toRequestBody("text/plain".toMediaType())
+        val file = Mockito.mock(File::class.java)
+        val requestImageFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
+        val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
+            "photo",
+            "nameFile",
+            requestImageFile
+        )
+
         val expectedUploadResponse = MutableLiveData<Result<UsualResponse>>()
         expectedUploadResponse.value = Result.Success(dummyUploadSuccess)
-        Mockito.`when`(repository.uploadStories(dummyMultipart, dummyDescription)).thenReturn(
+        Mockito.`when`(repository.uploadStories(imageMultipart, description)).thenReturn(
             expectedUploadResponse
         )
-        val actualUploadResponse = createStoryViewModel.uploadImage(dummyMultipart,dummyDescription).getOrAwaitValue {  }
-        Mockito.verify(repository).uploadStories(dummyMultipart, dummyDescription)
+        val actualUploadResponse = uploadViewModel.uploadImage(imageMultipart, description).getOrAwaitValue {  }
+        Mockito.verify(repository).uploadStories(imageMultipart, description)
+        assertNotNull(actualUploadResponse)
         assertTrue(actualUploadResponse is Result.Success)
     }
 
     @Test
     fun `when upload failed return result error`() = runTest {
+
+        val description = "Ini adalah deksripsi gambar".toRequestBody("text/plain".toMediaType())
+        val file = Mockito.mock(File::class.java)
+        val requestImageFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
+        val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
+            "photo",
+            "nameFile",
+            requestImageFile
+        )
+
         val expectedUploadResponse = MutableLiveData<Result<UsualResponse>>()
         expectedUploadResponse.value = Result.Error("error")
-        Mockito.`when`(repository.uploadStories(dummyMultipart, dummyDescription)).thenReturn(
+        Mockito.`when`(repository.uploadStories(imageMultipart, description)).thenReturn(
             expectedUploadResponse
         )
-        val actualUploadResponse = createStoryViewModel.uploadImage(dummyMultipart,dummyDescription).getOrAwaitValue {  }
-        Mockito.verify(repository).uploadStories(dummyMultipart, dummyDescription)
+        val actualUploadResponse = uploadViewModel.uploadImage(imageMultipart, description).getOrAwaitValue {  }
+        Mockito.verify(repository).uploadStories(imageMultipart, description)
         assertTrue(actualUploadResponse is Result.Error)
     }
 

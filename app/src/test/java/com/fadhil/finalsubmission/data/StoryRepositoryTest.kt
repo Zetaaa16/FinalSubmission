@@ -25,6 +25,12 @@ import com.fadhil.finalsubmission.utils.getOrAwaitValue
 import com.fadhil.finalsubmission.view.main.StoryAdapter
 import com.fadhil.finalsubmission.view.StoryPagingSource
 import com.fadhil.finalsubmission.view.noopListUpdateCallback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -42,28 +48,30 @@ class StoryRepositoryTest {
     private lateinit var storyDatabase: StoryDatabase
 
     @Mock
-    private lateinit var repositoryMock: StoryRepository
+    private lateinit var StoryRepositoryMock: StoryRepository
 
     @Mock
-    private lateinit var repository: StoryRepository
-    private val dummyMultipart = DataDummy.generateDummyMultipartFile()
-    private val dummyDescription = DataDummy.generateDummyRequestBody()
+    private lateinit var Storyrepository: StoryRepository
+
+
     private val dummyStoryItem = DataDummy.generateDummyLocationResponse()
 
-    private val dummyName = "Faisal Mahadi"
-    private val dummyPassword = "password"
-    private val dummyEmail = "faisalmahadi126@gmail.com"
+    companion object{
+        private const val dummyName = "forexample"
+        private const val dummyPassword = "123456"
+        private const val dummyEmail = "forexample@gmail.com"
+    }
 
     @Before
     fun setUp() {
-        repository = StoryRepository.getInstance(apiService, storyDatabase)
+        Storyrepository = StoryRepository.getInstance(apiService, storyDatabase)
     }
 
     @Test
-    fun `login success`() = runTest {
+    fun `login test`() = runTest {
         val expectedLoginResponse = DataDummy.generateResponseLogin()
         Mockito.`when`(apiService.login(dummyEmail, dummyPassword)).thenReturn(expectedLoginResponse)
-        val actualLogin = repository.login(dummyEmail, dummyPassword)
+        val actualLogin = Storyrepository.login(dummyEmail, dummyPassword)
         actualLogin.observeForTesting {
             assertEquals((actualLogin.value as Result.Success).data.message, "success")
             assertFalse((actualLogin.value as Result.Success).data.error)
@@ -72,12 +80,12 @@ class StoryRepositoryTest {
     }
 
     @Test
-    fun `register success`() = runTest {
+    fun `register test`() = runTest {
         val expectedRegisterResponse = DataDummy.generateResponseRegister()
         Mockito.`when`(apiService.register(dummyName, dummyEmail, dummyPassword)).thenReturn(
             expectedRegisterResponse
         )
-        val actualRegister = repository.register(dummyName, dummyEmail, dummyPassword)
+        val actualRegister = Storyrepository.register(dummyName, dummyEmail, dummyPassword)
         actualRegister.observeForTesting {
             assertEquals((actualRegister.value as Result.Success).data.message, "success")
             assertFalse((actualRegister.value as Result.Success).data.error)
@@ -86,13 +94,13 @@ class StoryRepositoryTest {
     }
 
     @Test
-    fun `get List Story Paging`() = runTest {
+    fun `get Story with Paging test`() = runTest {
         val dummyStory = DataDummy.generateDummyStoryResponse()
         val data: PagingData<StoryEntity> = StoryPagingSource.snapshot(dummyStory)
         val expectedStory = MutableLiveData<PagingData<StoryEntity>>()
         expectedStory.value = data
-        Mockito.`when`(repositoryMock.allStories()).thenReturn(expectedStory)
-        val actualStory = repositoryMock.allStories().getOrAwaitValue { }
+        Mockito.`when`(StoryRepositoryMock.allStories()).thenReturn(expectedStory)
+        val actualStory = StoryRepositoryMock.allStories().getOrAwaitValue { }
         val differ = AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.diffCallback,
             updateCallback = noopListUpdateCallback,
@@ -107,11 +115,11 @@ class StoryRepositoryTest {
     }
 
     @Test
-    fun `get list Story Location`() = runTest {
+    fun `get Story Location test`() = runTest {
         val expectedLocation = MutableLiveData<Result<List<GetStoryResult>>>()
         expectedLocation.value = Result.Success(dummyStoryItem.listStory)
-        Mockito.`when`(repositoryMock.locationStory()).thenReturn(expectedLocation)
-        val actualStoryLocation = repositoryMock.locationStory().getOrAwaitValue()
+        Mockito.`when`(StoryRepositoryMock.locationStory()).thenReturn(expectedLocation)
+        val actualStoryLocation = StoryRepositoryMock.locationStory().getOrAwaitValue()
         assertNotNull(actualStoryLocation)
         assertTrue(actualStoryLocation is Result.Success)
         assertEquals(dummyStoryItem.listStory, (actualStoryLocation as Result.Success).data)
@@ -122,15 +130,22 @@ class StoryRepositoryTest {
     }
 
     @Test
-    fun `upload story`() = runTest {
+    fun `upload story test`() = runTest {
+        val description = "Ini adalah deksripsi gambar".toRequestBody("text/plain".toMediaType())
+        val file = Mockito.mock(File::class.java)
+        val requestImageFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
+        val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
+            "photo",
+            "nameFile",
+            requestImageFile
+        )
         val expectedUpload = DataDummy.generateUploadSuccess()
         Mockito.`when`(
             apiService.uploadStories(
-                dummyMultipart,
-                dummyDescription
+                imageMultipart, description
             )
         ).thenReturn(expectedUpload)
-        val actualUpload = repository.uploadStories(dummyMultipart, dummyDescription)
+        val actualUpload = Storyrepository.uploadStories(imageMultipart, description)
         actualUpload.observeForTesting {
             assertFalse((actualUpload.value as Result.Success).data.error)
             assertEquals(

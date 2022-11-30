@@ -72,11 +72,11 @@ class FakeApiService : ApiService {
             val story = GetStoryResult(
                 id = i.toString(),
                 photoUrl = "https://story-api.dicoding.dev/images/stories/photos-1666845359145_osWD6l_I.jpg",
-                createdAt = "2022-10-27T04:35:59.148Z",
+                createdAt = "2022-11-30T16:23:18.152Z",
                 name = "nama $i",
                 description = "desc $i",
-                lon = 0.0,
-                lat = 0.0
+                lon = 1.2,
+                lat = 3.4
             )
             items.add(story)
         }

@@ -13,13 +13,13 @@ object DataDummy {
         val item: MutableList<StoryEntity> = arrayListOf()
         for (i in 0..100) {
             val story = StoryEntity(
-                id = i.toString(),
-                photoUrl = "https://story-api.dicoding.dev/images/stories/photos-1666845359145_osWD6l_I.jpg",
-                createdAt = "2022-10-27T04:35:59.148Z",
-                name = "nama $i",
-                description = "desc $i",
-                lon = 0.0,
-                lat = 0.0
+                i.toString(),
+                "https://story-api.dicoding.dev/images/stories/photos-1669810202247_0Rk3KCKE.jpg",
+                "2022-11-30T16:26:17.148Z",
+                "nama $i",
+                "desc $i",
+                1.2,
+                3.4
             )
             item.add(story)
         }
@@ -30,56 +30,40 @@ object DataDummy {
         val item: MutableList<GetStoryResult> = arrayListOf()
         for (i in 0..100) {
             val story = GetStoryResult(
-                id = i.toString(),
-                photoUrl = "https://story-api.dicoding.dev/images/stories/photos-1666845359145_osWD6l_I.jpg",
-                createdAt = "2022-10-27T04:35:59.148Z",
-                name = "nama $i",
-                description = "desc $i",
-                lon = 0.0,
-                lat = 0.0
+
+                "https://story-api.dicoding.dev/images/stories/photos-1666845359145_osWD6l_I.jpg",
+                "2022-10-27T04:35:59.148Z",
+                "nama $i",
+                "desc $i",
+
+                0.0,
+                i.toString(),
+                0.0
             )
             item.add(story)
         }
         return GetStoryResponse(
-            listStory = item,
-            error = false,
-            message = "Stories fetched successfully"
+            item,false,"Stories fetched successfully"
         )
     }
 
     fun generateResponseRegister(): UsualResponse {
-        return UsualResponse(
-            error = false, message = "success"
+        return UsualResponse(false, "success"
         )
     }
 
-    fun generateDummyMultipartFile(): MultipartBody.Part {
-        val dummyText = "text"
-        return MultipartBody.Part.create(dummyText.toRequestBody())
-    }
-
-    fun generateDummyRequestBody(): RequestBody {
-        val dummyText = "text"
-        return dummyText.toRequestBody()
-    }
 
     fun generateUploadSuccess(): UsualResponse {
-        return UsualResponse(
-            error = false, message = "success"
-        )
+        return UsualResponse(false, "success")
     }
 
     fun generateResponseLogin(): LoginResponse {
         val loginResult = LoginResult(
-            userId = "user-WTdihB1x0Rl1zDRD",
-            name = "faisal",
-            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLVdUZGloQjF4MFJsMXpEUkQiLCJpYXQiOjE2NjczMTQ3Njl9.qNWq-yGI2FVuvi8lixoRMkSe4xXp_7JrAzr1jkSfq9A"
+            "forexample",
+            "user-SjJ0bu9Gd4c8V42b",
+            "102u234rh148324"
         )
 
-        return LoginResponse(
-            loginResult = loginResult,
-            error = false,
-            message = "success"
-        )
+        return LoginResponse(loginResult, false, "success")
     }
 }

@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var storyAdapter: StoryAdapter
 
-    private val prefHelper by lazy {
+    private val pref by lazy {
         PreferenceDataSource.invoke(this)
     }
 
@@ -54,15 +54,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private val launcherIntent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == CREATE_STORY) {
-                val isUpdate = it.data?.getBooleanExtra("isUpdate", false)
-                if (isUpdate == true) {
-                    storyAdapter.refresh()
-                }
-            }
-        }
 
     private fun setObserver() {
         viewModel.listStoryResponse.observe(this) {
@@ -83,9 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
-        const val CREATE_STORY = 200
-    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.mainmenu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -97,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                 val alertDialog = AlertDialog.Builder(this)
                 alertDialog.setTitle(getString(R.string.message_logout))
                     ?.setPositiveButton(getString(R.string.action_yes)) {_,_ ->
-                        prefHelper.deleteDataAuth()
+                        pref.deleteDataAuth()
                         val intent = Intent (this,LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                         startActivity(intent)
@@ -125,6 +114,7 @@ class MainActivity : AppCompatActivity() {
         onDestroy()
         super.onBackPressed()
     }
+
 
 
 }

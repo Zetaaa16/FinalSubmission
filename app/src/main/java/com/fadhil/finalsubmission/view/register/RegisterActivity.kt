@@ -26,6 +26,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
         setOnClick()
         playAnimation()
+        supportActionBar?.hide()
 
         binding.apply {
             signupButton.setOnClickListener {

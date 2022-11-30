@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">FinalSubmission</string>
+
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="error_email">Email Tidak Boleh Kosong</string>
+    <string name="error_invalid_email">Email Tidak Valid</string>
+    <string name="logout">Keluar</string>
+    <string name="language">Bahasa</string>
+    <string name="upload_image" >Unggah Gambar</string>
+    <string name="camera" >Kamera</string>
+    <string name="input_text_here">Masukkan Teks disini</string>
+    <string name="upload_story" >Unggah Cerita</string>
+    <string name="image_display">Tampilan Gambar</string>
+    <string name="name_text">Teks Nama</string>
+    <string name="text_sample">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing</string>
+    <string name="title_welcome_page">Selamat Datang di Dicoding!</string>
+    <string name="message_title_login" >Silahkan Masuk</string>
+    <string name="email_text">Surel</string>
+    <string name="password_text">Kata Kunci</string>
+    <string name="login_text_button">Masuk</string>
+    <string name="join_withus">Bergabunglah bersama kami</string>
+    <string name="nama">Nama</string>
+    <string name="signup_text">Daftar</string>
+    <string name="already_account">Sudah punya akun?</string>
+    <string name="login_disini">Masuk disini</string>
+    <string name="message_welcome_page">Selamat datang di Dicoding!</string>
+    <string name="login">Masuk</string>
+    <string name="signup">Daftar</string>
+    <string name="photo_fail">Pengambilan Foto Gagal</string>
+    <string name="camera_fail">Kamera Gagal</string>
+    <string name="no_file_yet">Silahkan memasukkan file terlebih dahulu</string>
+    <string name="no_permission">Tidak mendapatkan Permisi</string>
+    <string name="ls_story">ini adalah list story</string>
+    <string name="second_ago">Detaik lalu</string>
+    <string name="minutes_ago">Menit lalu</string>
+    <string name="hours_ago">Jam lalu</string>
+    <string name="days_ago">Hari lalu</string>
+    <string name="text_date">00-00-0000</string>
+    <string name="link_register">belum punya akun? Masuk disini</string>
+    <string name="message_logout">Apakah anda yakin ingin keluar?</string>
+    <string name="action_yes">Ya</string>
+    <string name="action_cancel">Batal</string>
+    <string name="select_picture" >Pilih gambar</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Halo Fragment Kosong</string>
+    <string name="maps">Maps</string>
+    <string name="loading_desc">ini adalah deskripsi loading</string>
+    <string name="story_list_desc">ini adalah deskripsi cerita</string>
+    <string name="add_button_desc">ini adalah deskripsi tombol</string>
+    <string name="gambar">ini adalah gambar</string>
+    <string name="insert_image">Sisipkan Gambar</string>
+    <string name="add_story">Unggah Cerita</string>
+
+    <string name="no_connetioninternet">Tidak ada koneksi internet</string>
+    <string name="detailstory">Detail Cerita</string>
+    <string name="storyapp">Story App</string>
+    <string name="retry" >Coba lagi</string>
+    <string name="error_length_6" >Harus lebih dari 6</string>
+</resources>

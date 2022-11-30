@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
 
-    private val prefHelper by lazy {
+    private val pref by lazy {
         PreferenceDataSource.invoke(this)
     }
 
@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-      //  setOnClick()
+        supportActionBar?.hide()
         playAnimation()
 
         binding.apply {
@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
                             binding.loginButton.isEnabled = true
                             result.data.let {
                                 if (!it.error) {
-                                    prefHelper.saveAuthToken(it.loginResult.token)
+                                    pref.saveAuthToken(it.loginResult.token)
                                     message(it.message)
                                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                                     finish()

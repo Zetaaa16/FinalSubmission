@@ -30,12 +30,12 @@ class MapsViewModelTest {
 
     @Mock
     private lateinit var repository: StoryRepository
-    private lateinit var locationViewModel: MapsViewModel
+    private lateinit var mapsViewModel: MapsViewModel
     private val dummyStoryItem = DataDummy.generateDummyLocationResponse()
 
     @Before
     fun setUp() {
-        locationViewModel = MapsViewModel(repository)
+        mapsViewModel = MapsViewModel(repository)
     }
 
     @get:Rule
@@ -43,11 +43,13 @@ class MapsViewModelTest {
 
     @Test
     fun `when get location story Should Not Null and Return Success`() = runTest {
-        val expectedLocation = MutableLiveData<Result<List<GetStoryResult>>>()
-        expectedLocation.value = Result.Success(dummyStoryItem.listStory)
-        Mockito.`when`(repository.locationStory()).thenReturn(expectedLocation)
-        val actualStory = locationViewModel.getLocation().getOrAwaitValue()
+        val expectedMaps = MutableLiveData<Result<List<GetStoryResult>>>()
+        expectedMaps.value = Result.Success(dummyStoryItem.listStory)
+
+        Mockito.`when`(repository.locationStory()).thenReturn(expectedMaps)
+        val actualStory = mapsViewModel.getLocation().getOrAwaitValue()
         Mockito.verify(repository).locationStory()
+
         assertNotNull(actualStory)
         assertTrue(actualStory is Result.Success)
         assertEquals(
@@ -58,10 +60,12 @@ class MapsViewModelTest {
 
     @Test
     fun `when get location story network error Should Return Error`() {
-        val expectedLocation = MutableLiveData<Result<List<GetStoryResult>>>()
-        expectedLocation.value = Result.Error("error")
-        Mockito.`when`(repository.locationStory()).thenReturn(expectedLocation)
-        val actualStory = locationViewModel.getLocation().getOrAwaitValue()
+        val expectedMaps = MutableLiveData<Result<List<GetStoryResult>>>()
+        expectedMaps.value = Result.Error("error")
+
+        Mockito.`when`(repository.locationStory()).thenReturn(expectedMaps)
+        val actualStory = mapsViewModel.getLocation().getOrAwaitValue()
+
         Mockito.verify(repository).locationStory()
         assertNotNull(actualStory)
         assertTrue(actualStory is Result.Error)
