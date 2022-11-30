@@ -10,6 +10,7 @@ import coil.load
 import com.bumptech.glide.Glide
 import com.fadhil.finalsubmission.databinding.ItemRowStoryBinding
 import com.fadhil.finalsubmission.storage.database.story.StoryEntity
+import com.fadhil.finalsubmission.utils.getTimeLineUploaded
 import com.fadhil.finalsubmission.view.detail.DetailActivity
 
 
@@ -25,7 +26,11 @@ class StoryAdapter :
                     .into(imageview)
                 textView.text = item?.name
                 textdescription.text = item?.description
-                textDate.text = item?.createdAt
+                textDate.text = "${item?.createdAt?.let {
+                    getTimeLineUploaded(itemView.context,
+                        it
+                    )
+                }}"
                 itemRowStory.setOnClickListener {
                     val intent = Intent(itemView.context, DetailActivity::class.java)
                     intent.putExtra(DetailActivity.EXTRA_STORY, item)

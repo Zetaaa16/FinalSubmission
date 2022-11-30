@@ -55,4 +55,6 @@
     <string name="add_story">Upload Story</string>
 
     <string name="no_connetioninternet">Not Connection Internet</string>
+    <string name="detailstory">Detail Story</string>
+    <string name="storyapp">Story App</string>
 </resources>

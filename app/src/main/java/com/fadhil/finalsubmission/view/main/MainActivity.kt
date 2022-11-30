@@ -40,9 +40,15 @@ class MainActivity : AppCompatActivity() {
         setView()
         setObserver()
 
+        supportActionBar?.let {
+
+            it.title = resources.getString(R.string.storyapp)
+        }
+
 
         binding.btnAddStory.setOnClickListener {
-            launcherIntent.launch(Intent(this@MainActivity, UploadActivity::class.java))
+            val mIntent = Intent(this@MainActivity,UploadActivity::class.java)
+            startActivity(mIntent)
         }
     }
 
@@ -116,7 +122,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        finishAffinity()
+        onDestroy()
         super.onBackPressed()
     }
+
+
 }

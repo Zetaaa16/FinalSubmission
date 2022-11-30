@@ -8,18 +8,18 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.widget.doAfterTextChanged
+import com.fadhil.finalsubmission.R
 import com.fadhil.finalsubmission.databinding.ActivityUploadBinding
-import com.fadhil.finalsubmission.utils.ViewModelFactory
-import com.fadhil.finalsubmission.utils.reduceFileImage
-import com.fadhil.finalsubmission.utils.rotateBitmap
-import com.fadhil.finalsubmission.utils.uriToFile
-import com.fadhil.finalsubmission.view.camera.CameraActivity
+import com.fadhil.finalsubmission.utils.*
+
 import com.fadhil.finalsubmission.view.main.MainActivity
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -29,22 +29,18 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class UploadActivity : AppCompatActivity() {
-    private val binding by lazy(LazyThreadSafetyMode.NONE) {
-        ActivityUploadBinding.inflate(layoutInflater)
-    }
+    private lateinit var binding: ActivityUploadBinding
 
     private val viewModel by viewModels<UploadViewModel> {
         ViewModelFactory.getInstance(this)
     }
 
     companion object {
-        const val CAMERA_X_RESULT = 200
-
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
     }
     private lateinit var currentPhotoPath: String
-    private var isBackCamera: Boolean = false
+
 
 
     override fun onRequestPermissionsResult(
@@ -72,6 +68,7 @@ class UploadActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityUploadBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
@@ -80,12 +77,17 @@ class UploadActivity : AppCompatActivity() {
                 REQUEST_CODE_PERMISSIONS
             )
         }
-      //  setUi()
+
         binding.btnOpenCamera.setOnClickListener { startCameraX() }
         binding.btnOpenImage.setOnClickListener { startGallery() }
         binding.btnUpload.setOnClickListener { uploadImage()
         }
-        //setOnChange()
+
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.title = resources.getString(R.string.upload_story)
+        }
+
     }
 
 
@@ -94,24 +96,23 @@ class UploadActivity : AppCompatActivity() {
         viewModel.uploadImage(imageMultipart, toRequestBody).observe(this) { result ->
             when (result) {
                 is Result.Loading -> {
-                    //UtilsUi.showDialog(this)
+                    showLoading(true)
                 }
                 is Result.Success -> {
-                  //  UtilsUi.closeDialog()
+                  showLoading(false)
                     result.data.let {
                         if (!it.error) {
-                            val intent = Intent()
-                            intent.putExtra("isUpdate", true)
-                            setResult(MainActivity.CREATE_STORY, intent)
-                            finish()
-                            binding.btnUpload.isEnabled = true
+                            Intent (this@UploadActivity,MainActivity::class.java).also {
+                                startActivity(it)
+                                finishAffinity()
+                            }
                         }
                     }
                 }
                 is Result.Error -> {
-                   // UtilsUi.closeDialog()
+                   showLoading(false)
                     showMessage(result.error)
-                   // binding.btnUpload.isEnabled = true
+
                 }
             }
         }
@@ -141,8 +142,19 @@ class UploadActivity : AppCompatActivity() {
     }
 
     private fun startCameraX() {
-        val intent = Intent(this, CameraActivity::class.java)
-        launcherIntentCameraX.launch(intent)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.resolveActivity(packageManager)
+        createTempFile(application).also {
+            val photoURI: Uri = FileProvider.getUriForFile(
+                this@UploadActivity,
+                "com.fadhil.finalsubmission",
+                it
+            )
+            currentPhotoPath = it.absolutePath
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,photoURI)
+            launcherIntentCameraX.launch(intent)
+        }
+
     }
 
     private fun startGallery() {
@@ -158,11 +170,10 @@ class UploadActivity : AppCompatActivity() {
     private val launcherIntentCameraX = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (it.resultCode == CAMERA_X_RESULT) {
-            val myFile = it.data?.getSerializableExtra("picture") as File
-            isBackCamera = it.data?.getBooleanExtra("isBackCamera", true) as Boolean
+        if (it.resultCode == RESULT_OK) {
+            val myFile = File(currentPhotoPath)
             getFile = myFile
-            val result = rotateBitmap(BitmapFactory.decodeFile(myFile.path), isBackCamera)
+            val result = BitmapFactory.decodeFile(myFile.path)
             binding.imgPreview.setImageBitmap(result)
         }
     }
@@ -176,6 +187,11 @@ class UploadActivity : AppCompatActivity() {
                 binding.imgPreview.setImageURI(selectedImg)
             }
         }
+
+    private fun showLoading(isLoading: Boolean){
+        if (isLoading) binding.progressbar.show() else binding.progressbar.gone()
+        if (isLoading) binding.bg.show() else binding.bg.gone()
+    }
 
 
 }

@@ -90,7 +90,7 @@ class StoryRepository(
     fun locationStory(): LiveData<Result<List<GetStoryResult>>> = liveData {
         emit(Result.Loading)
         try {
-            val response = apiService.allStories( 1)
+            val response = apiService.allStories( 5)
             val listStory = response.listStory
             emit(Result.Success(listStory))
         } catch (e: Exception) {

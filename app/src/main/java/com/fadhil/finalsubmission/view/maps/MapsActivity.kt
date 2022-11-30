@@ -1,9 +1,13 @@
 package com.fadhil.finalsubmission.view.maps
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import com.fadhil.finalsubmission.R
 import com.fadhil.finalsubmission.databinding.ActivityMapsBinding
 import com.fadhil.finalsubmission.utils.ViewModelFactory
@@ -69,12 +73,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.uiSettings.apply {
-            isZoomControlsEnabled = true
-            isIndoorLevelPickerEnabled = true
-            isCompassEnabled = true
-            isMapToolbarEnabled = true
-        }
+        mMap.uiSettings.isZoomControlsEnabled = true
         addManyMarker()
+        getMyLocation()
     }
+
+
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted){
+                getMyLocation()
+            }
+
+        }
+
+    private fun getMyLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this.applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            mMap.isMyLocationEnabled = true
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+
+
 }
