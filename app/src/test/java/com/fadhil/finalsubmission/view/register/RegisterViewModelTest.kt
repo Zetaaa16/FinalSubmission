@@ -31,9 +31,9 @@ class RegisterViewModelTest {
     private lateinit var repository: StoryRepository
 
     private val dummyResponseRegister = DataDummy.generateResponseRegister()
-    private val dummyName = "faisal"
-    private val dummyEmail = "faisal@mail.com"
-    private val dummyPassword = "password"
+    private val dummyName = "forexample"
+    private val dummyEmail = "forexample@mail.com"
+    private val dummyPassword = "123456"
 
     @Before
     fun setUp() {

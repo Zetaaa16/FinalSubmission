@@ -49,6 +49,9 @@ class PreferenceDataSource {
         }
     }
 
+
+
+
     fun fetchAuthToken(): String? {
         return prefs?.getString(USER_TOKEN, "")
     }

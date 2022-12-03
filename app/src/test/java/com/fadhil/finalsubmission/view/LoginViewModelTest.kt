@@ -59,7 +59,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `when login failed return Result Error`() = runTest {
+    fun `when login failed and return Result Error`() = runTest {
         val expectedLogin = MutableLiveData<Result<LoginResponse>>()
         expectedLogin.value = Result.Error("error")
 

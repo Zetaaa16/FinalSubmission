@@ -148,8 +148,7 @@ class StoryRepositoryTest {
         val actualUpload = Storyrepository.uploadStories(imageMultipart, description)
         actualUpload.observeForTesting {
             assertFalse((actualUpload.value as Result.Success).data.error)
-            assertEquals(
-                (actualUpload.value as Result.Success).data.message,
+            assertEquals((actualUpload.value as Result.Success).data.message,
                 expectedUpload.message
             )
         }

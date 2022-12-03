@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        onDestroy()
+        finishAffinity()
         super.onBackPressed()
     }
 
