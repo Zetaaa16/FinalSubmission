@@ -56,7 +56,9 @@ class LoginActivity : AppCompatActivity() {
                                 if (!it.error) {
                                     pref.saveAuthToken(it.loginResult.token)
                                     message(it.message)
-                                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                                    intent =Intent(this@LoginActivity, MainActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
                                     finish()
                                 } else {
                                     message(it.message)

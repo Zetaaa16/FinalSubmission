@@ -110,10 +110,6 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onBackPressed() {
-        finishAffinity()
-        super.onBackPressed()
-    }
 
 
 
